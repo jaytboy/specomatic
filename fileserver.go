@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 )
@@ -32,13 +31,9 @@ func SpecServer(w http.ResponseWriter, r *http.Request) {
 		}
 		defer file.Close()
 		fmt.Println(handler.Header)
-		f, err := os.OpenFile("./test/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		defer f.Close()
-		io.Copy(f, file)
+		//TODO: 	- Check that the header contains "officedocument"
+		//			- Unzip the file
+		//			- Extract all the goodies and put them in a JSON
 	}
 
 }

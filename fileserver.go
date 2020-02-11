@@ -33,7 +33,7 @@ func SpecServer(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(handler.Header)
 		//TODO: 	- Check that the header contains "officedocument"
 		//			- Unzip the file
-		//			- Extract all the goodies and put them in a JSON
+		//			- Extract all the goodies and put them in a JSON struct
 	}
 
 }

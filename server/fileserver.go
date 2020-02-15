@@ -6,13 +6,16 @@ import (
 	"html/template"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
 // SpecServer returns "test" upon request.
 func SpecServer(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method)
+	var fileName string
 	if r.Method == "GET" {
 		crutime := time.Now().Unix()
 		h := md5.New()
@@ -30,10 +33,18 @@ func SpecServer(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		defer file.Close()
-		fmt.Println(handler.Header)
-		//TODO: 	- Check that the header contains "officedocument"
-		//			- Unzip the file
-		//			- Extract all the goodies and put them in a JSON struct
-	}
 
+		contentType := handler.Header.Get("Content-Type")
+		fileName = handler.Filename
+		if strings.Contains(contentType, "officedocument") {
+			fmt.Printf("The document %q was uploaded successfully!\n", handler.Filename)
+			f, err := os.OpenFile("./docs/"+fileName, os.O_WRONLY|os.O_CREATE, 0666)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			defer f.Close()
+			io.Copy(f, file)
+		}
+	}
 }

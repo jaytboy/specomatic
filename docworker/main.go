@@ -2,7 +2,6 @@ package main
 
 import (
 	"archive/zip"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -11,25 +10,34 @@ import (
 const fileName = "061000 - CARPENTRY.docx"
 
 func main() {
-	rd, err := zip.OpenReader("./docs/" + fileName)
+	// Unzips docx file
+	rd, err := zip.OpenReader("../docs/" + fileName)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rd.Close()
 
+	if _, err := os.Stat("../docs/word"); os.IsNotExist(err) {
+		os.Mkdir("../docs/word", 0755)
+	}
+
+	// saves document.xml in folder
 	for _, f := range rd.File {
-		if f.Name == "document.xml" {
-			fmt.Printf("Contents of %s:\n", f.Name)
-			rc, err := f.Open()
+		if f.Name == "word/document.xml" {
+			r, err := f.Open()
 			if err != nil {
 				log.Fatal(err)
 			}
-			_, err = io.CopyN(os.Stdout, rc, 68)
+			defer r.Close()
+
+			fs, err := os.OpenFile("../docs/"+f.Name, os.O_WRONLY|os.O_CREATE, 0766)
 			if err != nil {
 				log.Fatal(err)
 			}
-			rc.Close()
-			fmt.Println()
+			io.Copy(fs, r)
+			if err := fs.Close(); err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 }

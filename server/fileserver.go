@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -38,7 +39,7 @@ func SpecServer(w http.ResponseWriter, r *http.Request) {
 		fileName = handler.Filename
 		if strings.Contains(contentType, "officedocument") {
 			fmt.Printf("The document %q was uploaded successfully!\n", handler.Filename)
-			f, err := os.OpenFile("./docs/"+fileName, os.O_WRONLY|os.O_CREATE, 0666)
+			f, err := os.OpenFile("./docs/"+fileName, os.O_WRONLY|os.O_CREATE, 0644)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -47,4 +48,17 @@ func SpecServer(w http.ResponseWriter, r *http.Request) {
 			io.Copy(f, file)
 		}
 	}
+
+	UnzipDoc(fileName)
+	dat, err := ioutil.ReadFile("../docs/word/document.xml")
+	if err != nil {
+		panic(err)
+	}
+	sec, err := ProcessDoc(dat)
+	if err != nil {
+		fmt.Printf("Error processing doc: %v", err)
+	}
+
+	fmt.Printf("Processed %q", sec.Title)
+
 }

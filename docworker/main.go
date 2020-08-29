@@ -1,43 +1,58 @@
 package main
 
 import (
-	"archive/zip"
-	"io"
-	"log"
-	"os"
+	"bytes"
+	"encoding/xml"
+	"fmt"
+	"io/ioutil"
 )
 
-const fileName = "061000 - CARPENTRY.docx"
+// Location is the location in the document
+type Location struct {
+	Level        int
+	NumberSelf   int
+	NumberParent int
+}
+
+// Paragraph contains the raw pharagraph information.
+type Paragraph struct {
+	Text     string
+	Location Location
+	Options  []string
+	Comment  string
+}
+
+//Section contain the section information
+type Section struct {
+	Title     string
+	Paragraph []Paragraph
+	Comments  []Comment
+}
+
+// Comment is the struct for PStyle OMN
+type Comment struct {
+	Text      string
+	Reference Location
+}
 
 func main() {
-	// Unzips docx file
-	rd, err := zip.OpenReader("../docs/" + fileName)
+	b := new(Body)
+
+	data, err := ioutil.ReadFile("../LS Mech MF 2012v - 23 09 93 - Mechanical Sequence of Operations/word/document.xml")
 	if err != nil {
-		log.Fatal(err)
-	}
-	defer rd.Close()
-
-	if _, err := os.Stat("../docs/word"); os.IsNotExist(err) {
-		os.Mkdir("../docs/word", 0755)
+		panic(err)
 	}
 
-	// saves document.xml in folder
-	for _, f := range rd.File {
-		if f.Name == "word/document.xml" {
-			r, err := f.Open()
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer r.Close()
-
-			fs, err := os.OpenFile("../docs/"+f.Name, os.O_WRONLY|os.O_CREATE, 0766)
-			if err != nil {
-				log.Fatal(err)
-			}
-			io.Copy(fs, r)
-			if err := fs.Close(); err != nil {
-				log.Fatal(err)
-			}
-		}
+	if err := xml.Unmarshal(extractedBody(data), &b); err != nil {
+		panic(err)
 	}
+
+	for _, Paragraph
+}
+
+func extractedBody(data []byte) []byte {
+	leftTrim := bytes.SplitN(data, []byte("<w:body>"), 2)
+	rightTrim := bytes.SplitN(leftTrim[1], []byte("</w:body>"), 2)
+	comboSplit := [][]byte{[]byte("<w:body>"), rightTrim[0], []byte("</w:body>")}
+	return bytes.Join(comboSplit, nil)
 }

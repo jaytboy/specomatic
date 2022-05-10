@@ -43,5 +43,4 @@ This project is for a garage floor space of 10,125 sqft.
 -	Full load: 		10,125 sqft x 0.75 cfm/sqft = 7,600 cfm
 -	Intermittent load: 	10,125 sqft x 0.05 cfm/sqft = 510 cfm
 
-This system would need to perform at least 26,250 cfm when running at full capacity and 1,750 cfm on intermittent mode. This is an estimate and does not include areas such as connecting offices, waiting rooms, ticket booths, etc. and does not reflect the final system requirements. 
----
+This system would need to perform at least 26,250 cfm when running at full capacity and 1,750 cfm on intermittent mode. This is an estimate and does not include areas such as connecting offices, waiting rooms, ticket booths, etc. and does not reflect the final system requirements.
